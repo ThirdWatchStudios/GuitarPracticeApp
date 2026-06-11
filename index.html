@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guitar Practice — 15 Minutes a Day</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <h1>15-Minute Guitar</h1>
+      <div class="header-right">
+        <span id="streak" class="streak" title="Practice streak"></span>
+        <button id="log-btn" class="icon-btn" title="Practice history">Log</button>
+        <button id="settings-btn" class="icon-btn" title="Edit weekly schedule">Schedule</button>
+      </div>
+    </header>
+
+    <section class="today-banner">
+      <div id="today-label" class="today-label"></div>
+      <div id="category-name" class="category-name"></div>
+      <div id="category-blurb" class="category-blurb"></div>
+    </section>
+
+    <section class="level-row">
+      <span class="level-label">Level:</span>
+      <div class="level-buttons" id="level-buttons">
+        <button data-level="beginner">Beginner</button>
+        <button data-level="intermediate">Intermediate</button>
+        <button data-level="advanced">Advanced</button>
+      </div>
+    </section>
+
+    <section id="exercise-card" class="exercise-card">
+      <h2 id="exercise-name"></h2>
+      <p id="exercise-description"></p>
+      <div class="plan-box">
+        <div class="plan-title">Your 15 minutes</div>
+        <p id="exercise-plan"></p>
+      </div>
+      <div id="last-time" class="last-time hidden"></div>
+      <div class="card-actions">
+        <button id="reroll-btn" class="btn secondary">Give me another</button>
+        <button id="done-btn" class="btn primary">Mark done</button>
+      </div>
+      <div id="done-msg" class="done-msg hidden"></div>
+      <div id="note-form" class="note-form hidden">
+        <input id="note-text" type="text" maxlength="200"
+          placeholder="Optional note — wins, trouble spots, tempo…" />
+        <input id="note-bpm" type="number" min="20" max="400" placeholder="BPM" />
+        <button id="note-save" class="btn secondary">Save note</button>
+      </div>
+    </section>
+
+    <section class="fretboard-section">
+      <div class="fb-header">
+        <h2>Fretboard Explorer</h2>
+        <div class="fb-tabs" id="fb-tabs">
+          <button data-mode="chords">Chords</button>
+          <button data-mode="scales">Scales</button>
+        </div>
+      </div>
+      <div class="fb-controls">
+        <select id="fb-tuning" aria-label="Tuning"></select>
+        <div id="fb-custom-tuning" class="fb-custom-tuning hidden"></div>
+      </div>
+      <div id="fb-chord-controls" class="fb-controls">
+        <select id="fb-chord" aria-label="Chord"></select>
+        <button id="fb-strum" class="btn secondary">Strum</button>
+        <span id="fb-transpose-note" class="fb-note hidden"></span>
+      </div>
+      <p id="fb-chord-hint" class="fb-note hidden">
+        No chord shapes for this tuning yet — flip to Scales mode to explore it.
+      </p>
+      <div id="fb-scale-controls" class="fb-controls">
+        <select id="fb-root" aria-label="Root note"></select>
+        <select id="fb-scale" aria-label="Scale type"></select>
+        <div class="fb-tabs" id="fb-label-toggle">
+          <button data-labels="notes">Notes</button>
+          <button data-labels="intervals">Intervals</button>
+        </div>
+      </div>
+      <div id="fb-board" class="fb-board"></div>
+      <p class="fb-hint">Tap any dot to hear the note.</p>
+    </section>
+
+    <section class="week-strip" id="week-strip"></section>
+
+    <dialog id="settings-dialog" class="settings-dialog">
+      <h2>Weekly Schedule</h2>
+      <p class="settings-hint">Choose which category you practice on each day.</p>
+      <div id="schedule-editor" class="schedule-editor"></div>
+      <div class="dialog-actions">
+        <button id="settings-reset" class="btn secondary">Restore defaults</button>
+        <button id="settings-close" class="btn primary">Done</button>
+      </div>
+    </dialog>
+
+    <dialog id="log-dialog" class="settings-dialog log-dialog">
+      <h2>Practice Log</h2>
+      <p id="log-summary" class="settings-hint"></p>
+      <div id="log-heatmap" class="log-heatmap"></div>
+      <h3>By category</h3>
+      <div id="log-categories"></div>
+      <h3>Recent sessions</h3>
+      <div id="log-recent"></div>
+      <div class="dialog-actions">
+        <button id="log-close" class="btn primary">Done</button>
+      </div>
+    </dialog>
+
+    <footer class="footer">Third Watch Studios</footer>
+
+    <div class="fab-stack">
+      <div id="timer-panel" class="fab-panel timer hidden">
+        <div class="timer-top">
+          <div id="timer-display" class="timer-display">15:00</div>
+          <div class="timer-actions">
+            <button id="timer-toggle" class="btn primary">Start</button>
+            <button id="timer-reset" class="btn secondary">Reset</button>
+          </div>
+        </div>
+        <div class="timer-progress">
+          <div id="timer-progress-fill" class="timer-progress-fill"></div>
+        </div>
+      </div>
+
+      <div id="metro-panel" class="fab-panel metronome hidden">
+        <div class="metro-top">
+          <div>
+            <div class="metro-bpm">
+              <span id="metro-bpm-value">92</span><span class="metro-bpm-unit">BPM</span>
+            </div>
+            <div id="metro-dots" class="metro-dots"></div>
+          </div>
+          <div class="metro-actions">
+            <button id="metro-tap" class="btn secondary">Tap</button>
+            <button id="metro-toggle" class="btn primary">Start</button>
+          </div>
+        </div>
+        <input id="metro-slider" type="range" min="30" max="240" aria-label="Tempo" />
+        <div class="metro-row">
+          <div class="metro-steppers">
+            <button class="metro-step" data-d="-5">−5</button>
+            <button class="metro-step" data-d="-1">−1</button>
+            <button class="metro-step" data-d="1">+1</button>
+            <button class="metro-step" data-d="5">+5</button>
+          </div>
+          <select id="metro-beats" aria-label="Beats per bar">
+            <option value="2">2/4</option>
+            <option value="3">3/4</option>
+            <option value="4">4/4</option>
+            <option value="6">6/8</option>
+          </select>
+          <button id="metro-suggest" class="metro-suggest hidden"></button>
+        </div>
+      </div>
+
+      <button id="fab-metro" class="fab" title="Metronome" aria-label="Metronome">
+        <span id="fab-metro-label" class="fab-main">92</span>
+        <span class="fab-sub">BPM</span>
+      </button>
+      <button id="fab-timer" class="fab" title="Practice timer" aria-label="Practice timer">
+        <span id="fab-timer-label" class="fab-main">15:00</span>
+      </button>
+    </div>
+  </main>
+
+  <script src="exercises.js"></script>
+  <script src="app.js"></script>
+  <script src="fretboard.js"></script>
+  <script src="metronome.js"></script>
+</body>
+</html>
