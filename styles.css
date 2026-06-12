@@ -40,10 +40,51 @@ select:focus-visible {
 .app {
   max-width: 640px;
   margin: 0 auto;
-  padding: 28px 18px 110px;
+  padding: 20px 18px 96px;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 14px;
+}
+
+/* On wide screens the FABs sit beside the column, not over it. */
+@media (min-width: 900px) {
+  .app { padding-bottom: 28px; }
+}
+
+/* Main view tabs */
+.main-tabs {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.main-tabs button {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.main-tabs button:hover { color: var(--text); }
+
+.main-tabs button.active {
+  background: var(--surface-2);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.tab-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 /* Floating action buttons (timer + metronome) */
@@ -171,7 +212,17 @@ select:focus-visible {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 24px 26px;
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.banner-main {
+  flex: 1 1 240px;
+  min-width: 0;
 }
 
 .today-label {
@@ -190,15 +241,15 @@ select:focus-visible {
   height: 1px;
   background: var(--accent);
   opacity: 0.85;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .category-name {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: 0.01em;
   color: var(--text-bright);
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 .category-blurb {
@@ -208,11 +259,13 @@ select:focus-visible {
   margin-top: 6px;
 }
 
-/* Level selector */
+/* Level selector (lives inside the today banner) */
 .level-row {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .level-label {
@@ -233,9 +286,9 @@ select:focus-visible {
   border: none;
   background: transparent;
   color: var(--text-dim);
-  padding: 6px 16px;
+  padding: 5px 13px;
   border-radius: 999px;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   cursor: pointer;
   transition: color 0.15s, background 0.15s;
 }
@@ -274,11 +327,11 @@ select:focus-visible {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 26px;
+  padding: 20px 22px;
 }
 
 .exercise-card h2 {
-  margin: 0 0 12px;
+  margin: 0 0 8px;
   font-size: 1.25rem;
   letter-spacing: 0.01em;
   color: var(--text-bright);
@@ -344,7 +397,7 @@ select:focus-visible {
 }
 
 .plan-box {
-  margin-top: 18px;
+  margin-top: 12px;
   background: var(--surface-2);
   border-left: 2px solid var(--accent);
   border-radius: 0 8px 8px 0;
@@ -369,7 +422,7 @@ select:focus-visible {
 .card-actions {
   display: flex;
   gap: 10px;
-  margin-top: 22px;
+  margin-top: 16px;
   flex-wrap: wrap;
 }
 
@@ -724,7 +777,7 @@ select:focus-visible {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 12px 4px;
+  padding: 8px 4px;
   text-align: center;
   cursor: default;
 }
@@ -992,5 +1045,7 @@ span.fb-note { margin: 0; }
 @media (max-width: 480px) {
   .timer-top { flex-direction: column; align-items: flex-start; }
   .metro-top { flex-direction: column; align-items: flex-start; }
-  .level-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .level-row { align-items: flex-start; }
+  .header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .header-right { flex-wrap: wrap; }
 }

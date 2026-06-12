@@ -667,6 +667,16 @@ function notifyTimerDone() {
 
 // ── Wire-up ──────────────────────────────────────────────────────────────
 
+document.querySelectorAll("#main-tabs button").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#main-tabs button").forEach((b) => {
+      b.classList.toggle("active", b === btn);
+    });
+    document.getElementById("tab-practice").classList.toggle("hidden", btn.dataset.tab !== "practice");
+    document.getElementById("tab-fretboard").classList.toggle("hidden", btn.dataset.tab !== "fretboard");
+  });
+});
+
 document.querySelectorAll("#level-buttons button").forEach((btn) => {
   btn.addEventListener("click", () => {
     levels[todayCategoryId()] = btn.dataset.level;

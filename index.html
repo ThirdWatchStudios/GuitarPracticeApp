@@ -25,18 +25,26 @@
       </div>
     </header>
 
-    <section class="today-banner">
-      <div id="today-label" class="today-label"></div>
-      <div id="category-name" class="category-name"></div>
-      <div id="category-blurb" class="category-blurb"></div>
-    </section>
+    <nav class="main-tabs" id="main-tabs">
+      <button data-tab="practice" class="active">Practice</button>
+      <button data-tab="fretboard">Fretboard</button>
+    </nav>
 
-    <section class="level-row">
-      <span class="level-label" id="level-label">Level:</span>
-      <div class="level-buttons" id="level-buttons">
-        <button data-level="beginner">Beginner</button>
-        <button data-level="intermediate">Intermediate</button>
-        <button data-level="advanced">Advanced</button>
+    <div id="tab-practice" class="tab-pane">
+
+    <section class="today-banner">
+      <div class="banner-main">
+        <div id="today-label" class="today-label"></div>
+        <div id="category-name" class="category-name"></div>
+        <div id="category-blurb" class="category-blurb"></div>
+      </div>
+      <div class="level-row">
+        <span class="level-label" id="level-label">Level:</span>
+        <div class="level-buttons" id="level-buttons">
+          <button data-level="beginner">Beginner</button>
+          <button data-level="intermediate">Intermediate</button>
+          <button data-level="advanced">Advanced</button>
+        </div>
       </div>
     </section>
 
@@ -71,6 +79,12 @@
       </div>
     </section>
 
+    <section class="week-strip" id="week-strip"></section>
+
+    </div>
+
+    <div id="tab-fretboard" class="tab-pane hidden">
+
     <section class="fretboard-section">
       <div class="fb-header">
         <h2>Fretboard Explorer</h2>
@@ -103,7 +117,7 @@
       <p class="fb-hint">Tap any dot to hear the note.</p>
     </section>
 
-    <section class="week-strip" id="week-strip"></section>
+    </div>
 
     <dialog id="paths-dialog" class="settings-dialog paths-dialog">
       <h2>Lesson Paths</h2>
