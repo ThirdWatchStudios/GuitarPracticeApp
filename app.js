@@ -1,17 +1,22 @@
 // Guitar Practice app logic.
-// State persists in localStorage: level, schedule, recent exercise history,
-// today's pick, and practice streak.
+// State persists in localStorage: per-category levels, schedule, recent
+// exercise history, today's pick, and practice streak.
 
 const STORAGE_KEYS = {
-  level: "gp.level",
+  level: "gp.level", // legacy single level, migrated into gp.levels
+  levels: "gp.levels", // { categoryId: "beginner" | "intermediate" | "advanced" }
   schedule: "gp.schedule",
   history: "gp.history", // last N exercise ids, most recent last
-  todayPick: "gp.todayPick", // { date: "YYYY-MM-DD", exerciseId }
+  todayPick: "gp.todayPick", // { date: "YYYY-MM-DD", exerciseId, level }
   streak: "gp.streak", // { lastDone: "YYYY-MM-DD", count: n }
   log: "gp.log", // [{ date, ts, id, level, category, note, bpm }]
 };
 
 const HISTORY_SIZE = 10;
+const LEVELS = ["beginner", "intermediate", "advanced"];
+const LEVEL_LABELS = { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" };
+const MASTERY_SESSIONS = 3;
+const LEVEL_UP_THRESHOLD = 0.75;
 const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const DAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -53,12 +58,27 @@ function escapeHtml(s) {
 
 // ── State ────────────────────────────────────────────────────────────────
 
-let level = load(STORAGE_KEYS.level, "beginner");
 let schedule = { ...DEFAULT_SCHEDULE, ...load(STORAGE_KEYS.schedule, {}) };
+let levels = loadLevels();
 let history = load(STORAGE_KEYS.history, []);
 let log = load(STORAGE_KEYS.log, []);
 let currentExercise = null;
 let lastLogIndex = null;
+
+// Per-category levels, seeded from the legacy single gp.level if present.
+function loadLevels() {
+  const legacy = load(STORAGE_KEYS.level, "beginner");
+  const saved = load(STORAGE_KEYS.levels, {});
+  const all = {};
+  for (const id of Object.keys(CATEGORIES)) {
+    all[id] = LEVELS.includes(saved[id]) ? saved[id] : legacy;
+  }
+  return all;
+}
+
+function todayCategoryId() {
+  return schedule[new Date().getDay()];
+}
 
 // "…metronome at 60 BPM…" -> 60, for pre-setting the metronome.
 function extractBpm(exercise) {
@@ -67,30 +87,65 @@ function extractBpm(exercise) {
   return m ? Number(m[1]) : null;
 }
 
+// ── Lesson paths & mastery ───────────────────────────────────────────────
+
+// Array order in EXERCISES within a category+level is the path order.
+function pathExercises(categoryId, lvl) {
+  return EXERCISES.filter((e) => e.category === categoryId && e.level === lvl);
+}
+
+function exerciseStats(id) {
+  let count = 0;
+  let bestBpm = 0;
+  let lastTs = 0;
+  for (const e of log) {
+    if (e.id !== id) continue;
+    count += 1;
+    if (e.bpm > bestBpm) bestBpm = e.bpm;
+    const ts = e.ts || new Date(e.date + "T00:00:00").getTime();
+    if (ts > lastTs) lastTs = ts;
+  }
+  return { count, bestBpm, lastTs };
+}
+
+function isMastered(exercise) {
+  const s = exerciseStats(exercise.id);
+  if (exercise.targetBpm && s.bestBpm >= exercise.targetBpm) return true;
+  return s.count >= MASTERY_SESSIONS;
+}
+
 // ── Exercise picking ─────────────────────────────────────────────────────
 
+// The picker walks the path: earliest unmastered step first. Once a level
+// is fully mastered, exercises resurface as review, least recent first.
 function pickExercise(categoryId, lvl, excludeIds) {
-  const pool = EXERCISES.filter((e) => e.category === categoryId && e.level === lvl);
+  const pool = pathExercises(categoryId, lvl);
   if (pool.length === 0) return null;
-  const fresh = pool.filter((e) => !excludeIds.includes(e.id));
-  const candidates = fresh.length > 0 ? fresh : pool;
-  return candidates[Math.floor(Math.random() * candidates.length)];
+  const unmastered = pool.filter((e) => !isMastered(e));
+  const review = pool
+    .filter((e) => isMastered(e))
+    .sort((a, b) => exerciseStats(a.id).lastTs - exerciseStats(b.id).lastTs);
+  const ordered = [...unmastered, ...review];
+  return ordered.find((e) => !excludeIds.includes(e.id)) || ordered[0];
 }
 
 function getTodaysExercise({ forceNew = false } = {}) {
   const today = todayString();
-  const categoryId = schedule[new Date().getDay()];
+  const categoryId = todayCategoryId();
+  const lvl = levels[categoryId];
   const saved = load(STORAGE_KEYS.todayPick, null);
 
-  if (!forceNew && saved && saved.date === today && saved.level === level) {
+  if (!forceNew && saved && saved.date === today && saved.level === lvl) {
     const existing = EXERCISES.find((e) => e.id === saved.exerciseId);
     if (existing && existing.category === categoryId) return existing;
   }
 
-  const exclude = forceNew && currentExercise ? [...history, currentExercise.id] : history;
-  const picked = pickExercise(categoryId, level, exclude);
+  // The path decides the daily pick; history only matters when rerolling,
+  // so "Give me another" cycles onward instead of returning the same step.
+  const exclude = forceNew && currentExercise ? [...history, currentExercise.id] : [];
+  const picked = pickExercise(categoryId, lvl, exclude);
   if (picked) {
-    save(STORAGE_KEYS.todayPick, { date: today, exerciseId: picked.id, level });
+    save(STORAGE_KEYS.todayPick, { date: today, exerciseId: picked.id, level: lvl });
   }
   return picked;
 }
@@ -133,7 +188,7 @@ function markDone() {
         date: today,
         ts: Date.now(),
         id: currentExercise.id,
-        level,
+        level: currentExercise.level,
         category: currentExercise.category,
         note: null,
         bpm: null,
@@ -147,6 +202,8 @@ function markDone() {
     document.getElementById("note-form").classList.remove("hidden");
   }
   renderStreak();
+  renderPath();
+  renderLevelUp();
 
   const msg = document.getElementById("done-msg");
   msg.textContent =
@@ -165,6 +222,9 @@ function saveNote() {
   save(STORAGE_KEYS.log, log);
   document.getElementById("note-form").classList.add("hidden");
   document.getElementById("done-msg").textContent = "Noted. It'll resurface next time.";
+  // A logged BPM can cross an exercise's mastery target.
+  renderPath();
+  renderLevelUp();
 }
 
 // ── Rendering ────────────────────────────────────────────────────────────
@@ -188,13 +248,66 @@ function renderExercise() {
       "No exercises exist for this category and level yet.";
     card.querySelector("#exercise-plan").textContent = "";
     document.getElementById("last-time").classList.add("hidden");
+    document.getElementById("path-strip").classList.add("hidden");
     return;
   }
   document.getElementById("exercise-name").textContent = currentExercise.name;
   document.getElementById("exercise-description").textContent = currentExercise.description;
   document.getElementById("exercise-plan").textContent = currentExercise.plan;
+  renderPath();
   renderLastTime();
   window.metroSetSuggestedBpm?.(extractBpm(currentExercise));
+}
+
+// Path position and mastery progress for the current exercise.
+function renderPath() {
+  const strip = document.getElementById("path-strip");
+  if (!currentExercise) {
+    strip.classList.add("hidden");
+    return;
+  }
+  const pool = pathExercises(currentExercise.category, currentExercise.level);
+  const step = pool.findIndex((e) => e.id === currentExercise.id) + 1;
+
+  document.getElementById("path-dots").innerHTML = pool
+    .map((e) => {
+      let cls = "path-dot";
+      if (isMastered(e)) cls += " mastered";
+      if (e.id === currentExercise.id) cls += " current";
+      return `<span class="${cls}" title="${escapeHtml(e.name)}"></span>`;
+    })
+    .join("");
+
+  const s = exerciseStats(currentExercise.id);
+  let status;
+  if (isMastered(currentExercise)) {
+    status = "review — mastered";
+  } else {
+    status = `sessions ${s.count}/${MASTERY_SESSIONS}`;
+    if (currentExercise.targetBpm) {
+      status += ` · target ${currentExercise.targetBpm} BPM`;
+      if (s.bestBpm) status += ` (best ${s.bestBpm})`;
+    }
+  }
+  document.getElementById("path-meta").textContent = `Step ${step} of ${pool.length} · ${status}`;
+  strip.classList.remove("hidden");
+}
+
+// Quiet prompt to bump a category's level once most of it is mastered.
+function renderLevelUp() {
+  const box = document.getElementById("level-up");
+  const categoryId = todayCategoryId();
+  const lvl = levels[categoryId];
+  const next = LEVELS[LEVELS.indexOf(lvl) + 1];
+  const pool = pathExercises(categoryId, lvl);
+  const mastered = pool.filter((e) => isMastered(e)).length;
+  const ready = Boolean(next) && pool.length > 0 && mastered / pool.length >= LEVEL_UP_THRESHOLD;
+  box.classList.toggle("hidden", !ready);
+  if (!ready) return;
+  document.getElementById("level-up-text").textContent =
+    `${mastered} of ${pool.length} ${LEVEL_LABELS[lvl].toLowerCase()} ${CATEGORIES[categoryId].short} ` +
+    `exercises mastered — ready for ${LEVEL_LABELS[next]}?`;
+  document.getElementById("level-up-btn").textContent = `Move up`;
 }
 
 // Resurface the most recent past note/tempo for the current exercise.
@@ -220,8 +333,10 @@ function renderLastTime() {
 }
 
 function renderLevelButtons() {
+  const categoryId = todayCategoryId();
+  document.getElementById("level-label").textContent = `${CATEGORIES[categoryId].short} level:`;
   document.querySelectorAll("#level-buttons button").forEach((btn) => {
-    btn.classList.toggle("active", btn.dataset.level === level);
+    btn.classList.toggle("active", btn.dataset.level === levels[categoryId]);
   });
 }
 
@@ -343,7 +458,9 @@ function renderScheduleEditor() {
       localStorage.removeItem(STORAGE_KEYS.todayPick); // category may have changed
       renderToday();
       renderWeekStrip();
+      renderLevelButtons();
       renderExercise();
+      renderLevelUp();
     });
 
     row.appendChild(label);
@@ -429,12 +546,25 @@ function notifyTimerDone() {
 
 document.querySelectorAll("#level-buttons button").forEach((btn) => {
   btn.addEventListener("click", () => {
-    level = btn.dataset.level;
-    save(STORAGE_KEYS.level, level);
+    levels[todayCategoryId()] = btn.dataset.level;
+    save(STORAGE_KEYS.levels, levels);
     localStorage.removeItem(STORAGE_KEYS.todayPick);
     renderLevelButtons();
     renderExercise();
+    renderLevelUp();
   });
+});
+
+document.getElementById("level-up-btn").addEventListener("click", () => {
+  const categoryId = todayCategoryId();
+  const next = LEVELS[LEVELS.indexOf(levels[categoryId]) + 1];
+  if (!next) return;
+  levels[categoryId] = next;
+  save(STORAGE_KEYS.levels, levels);
+  localStorage.removeItem(STORAGE_KEYS.todayPick);
+  renderLevelButtons();
+  renderExercise();
+  renderLevelUp();
 });
 
 document.getElementById("reroll-btn").addEventListener("click", () => {
@@ -470,7 +600,9 @@ document.getElementById("settings-reset").addEventListener("click", () => {
   renderScheduleEditor();
   renderToday();
   renderWeekStrip();
+  renderLevelButtons();
   renderExercise();
+  renderLevelUp();
 });
 
 document.getElementById("timer-toggle").addEventListener("click", () => {
@@ -512,6 +644,7 @@ document.addEventListener("keydown", (e) => {
 renderToday();
 renderLevelButtons();
 renderExercise();
+renderLevelUp();
 renderStreak();
 renderWeekStrip();
 renderTimer();

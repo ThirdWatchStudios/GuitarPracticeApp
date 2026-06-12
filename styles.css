@@ -248,6 +248,27 @@ select:focus-visible {
   font-weight: 600;
 }
 
+/* Level-up suggestion */
+.level-up {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text-bright);
+}
+
+.level-up .btn {
+  padding: 7px 14px;
+  font-size: 0.85rem;
+}
+
 /* Exercise card */
 .exercise-card {
   background: var(--surface);
@@ -261,6 +282,50 @@ select:focus-visible {
   font-size: 1.25rem;
   letter-spacing: 0.01em;
   color: var(--text-bright);
+}
+
+/* Lesson-path progress strip */
+.path-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.path-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.path-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--border-strong);
+  opacity: 0.55;
+}
+
+.path-dot.mastered {
+  background: var(--accent);
+  opacity: 1;
+}
+
+.path-dot.current {
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  opacity: 1;
+}
+
+.path-dot.current.mastered {
+  background: var(--accent);
+}
+
+.path-meta {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
 }
 
 .exercise-card p {

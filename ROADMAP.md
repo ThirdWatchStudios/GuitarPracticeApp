@@ -3,7 +3,9 @@
 High-level ideas for future sessions. The app currently has: daily category
 scheduling, an 84-exercise library (7 categories × 3 levels), fretboard
 explorer with alternate tunings, metronome + timer FABs, practice log with
-notes and personal bests, all styled to the Third Watch Studios brand.
+notes and personal bests, lesson paths (per-category levels, ordered
+progression, mastery via the log, review pool, level-up prompts), all styled
+to the Third Watch Studios brand.
 
 ---
 
@@ -33,22 +35,23 @@ notes and personal bests, all styled to the Third Watch Studios brand.
 
 ## 2. Lesson paths (the big one)
 
-The current model is a random-with-no-repeats picker. Paths turn it into a
-curriculum:
+MVP shipped 2026-06-11: ordered progressions (array order in `exercises.js`
+is the path), mastery (3 logged sessions or a logged BPM at/above
+`targetBpm`), review pool (least-recently-played once a level is fully
+mastered), per-category levels (`gp.levels`, migrated from `gp.level`), and
+level-up prompts at 75% mastered. Still open below: spaced repetition,
+named programs, weak-spot nudges.
 
-- **Ordered progressions per category** — exercises get a `prerequisites` or
-  `order` field; the picker prefers the next unmastered step instead of pure
-  random. Example path (picking): alternate picking foundations → string
-  crossing → scale sequences → economy → cross-picking.
-- **Mastery criteria** — an exercise is "mastered" when logged N times, or
-  logged at/above a target BPM (the log already captures BPM). Mastered
-  exercises retire into a review pool.
+- ~~**Ordered progressions per category**~~ — done; the picker serves the
+  earliest unmastered step. Array order stands in for an `order` field.
+- ~~**Mastery criteria**~~ — done; `targetBpm` set on 8 tempo-driven
+  exercises so far, worth extending in the content pass.
 - **Spaced repetition for review** — mastered exercises resurface on a decay
   schedule (1 week, 2 weeks, a month). A daily session could become
-  10 min new material + 5 min review.
-- **Level-up suggestions** — when most exercises at a level are mastered,
-  the app suggests moving that category's level up (per-category levels
-  instead of one global level).
+  10 min new material + 5 min review. (The current review pool is
+  least-recently-played, not decay-scheduled — this is the upgrade.)
+- ~~**Level-up suggestions**~~ — done; quiet banner with a "Move up" button
+  when ≥75% of the category's current level is mastered.
 - **Named multi-week programs** — e.g. "Fingerstyle Foundations, 4 weeks" —
   a curated sequence across categories that temporarily overrides the weekly
   schedule. Good for focused goals (learn Travis picking, demystify CAGED).
@@ -89,8 +92,7 @@ Carried over from earlier discussion plus new:
 
 ## 5. Suggested next-session order
 
-1. Lesson paths MVP: per-category levels + ordered progression + mastery via
-   log data (highest leverage, builds on what exists).
+1. ~~Lesson paths MVP~~ — shipped 2026-06-11.
 2. Spaced-repetition review pool.
 3. Drone player FAB + "show me" fretboard linking.
 4. PWA wrapper + data export.

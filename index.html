@@ -24,7 +24,7 @@
     </section>
 
     <section class="level-row">
-      <span class="level-label">Level:</span>
+      <span class="level-label" id="level-label">Level:</span>
       <div class="level-buttons" id="level-buttons">
         <button data-level="beginner">Beginner</button>
         <button data-level="intermediate">Intermediate</button>
@@ -32,7 +32,16 @@
       </div>
     </section>
 
+    <section id="level-up" class="level-up hidden">
+      <span id="level-up-text"></span>
+      <button id="level-up-btn" class="btn secondary">Move up</button>
+    </section>
+
     <section id="exercise-card" class="exercise-card">
+      <div id="path-strip" class="path-strip hidden">
+        <div id="path-dots" class="path-dots"></div>
+        <div id="path-meta" class="path-meta"></div>
+      </div>
       <h2 id="exercise-name"></h2>
       <p id="exercise-description"></p>
       <div class="plan-box">

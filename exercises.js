@@ -1,6 +1,11 @@
 // Exercise library for the Guitar Practice app.
 // Each category has exercises at three levels. Every exercise is designed
 // to fill a focused 15-minute session.
+//
+// Within a category and level, array order is the lesson-path order: the
+// picker serves the earliest unmastered exercise first. An exercise is
+// mastered after MASTERY_SESSIONS logged sessions, or — where `targetBpm`
+// is set — by logging a session at or above that tempo.
 
 const CATEGORIES = {
   lefthand: {
@@ -61,6 +66,7 @@ const EXERCISES = [
     description:
       "Place one finger per fret starting at fret 5: index-middle-ring-pinky on each string, low E to high E and back. Keep fingers hovering close to the strings and press just behind the fret.",
     plan: "5 min slow with a metronome at 60 BPM (one note per click) · 5 min moving the pattern up one fret each pass · 5 min trying 80 BPM while keeping every note clean.",
+    targetBpm: 80,
   },
   {
     id: "lh-b2",
@@ -106,6 +112,7 @@ const EXERCISES = [
     description:
       "Using the A minor pentatonic box at fret 5, play continuous triplets using only one pick stroke per string — the rest is hammer-ons and pull-offs. Keep the volume even between picked and legato notes.",
     plan: "5 min at 60 BPM triplets · 5 min at 72 BPM · 5 min improvising short legato phrases inside the box.",
+    targetBpm: 72,
   },
   {
     id: "lh-i3",
@@ -133,6 +140,7 @@ const EXERCISES = [
     description:
       "Play the C major scale across all six strings using three-notes-per-string fingerings, in all seven positions. Use economy of motion — fingers stay within a fret of the string.",
     plan: "10 min cycling through positions at 16th notes, 80 BPM · 5 min picking one position and pushing the tempo in 8 BPM steps.",
+    targetBpm: 96,
   },
   {
     id: "lh-a2",
@@ -160,6 +168,7 @@ const EXERCISES = [
     description:
       "Play 1-2-3-4 as a fast 'burst' (16th notes for one beat) followed by a beat of rest, alternating. Bursts train speed without building tension — the rest beat is for checking your hand is relaxed.",
     plan: "5 min bursts at 100 BPM · 5 min at 120 BPM · 5 min stitching two bursts together into longer runs.",
+    targetBpm: 120,
   },
 
   // ── Fingerstyle ────────────────────────────────────────────────────────
@@ -189,6 +198,7 @@ const EXERCISES = [
     description:
       "Cycle the right-hand pattern p-i-m-a (thumb, index, middle, ring) over a simple chord progression: C - Am - F - G, four plucks per chord. Keep your wrist still; let the fingers do the work.",
     plan: "5 min on one chord perfecting the motion · 5 min through the progression slowly · 5 min with a metronome at 70 BPM.",
+    targetBpm: 70,
   },
   {
     id: "fs-b4",
@@ -234,6 +244,7 @@ const EXERCISES = [
     description:
       "Classical tremolo: p-a-m-i (thumb plays a bass note, then ring-middle-index repeat the same treble note). Aim for perfectly even spacing — speed comes later. Use the open B string over an Em chord.",
     plan: "10 min slow and even with a metronome (start ~50 BPM, one note per click) · 5 min moving the bass note while the tremolo stays constant.",
+    targetBpm: 60,
   },
   {
     id: "fs-a1",
@@ -281,6 +292,7 @@ const EXERCISES = [
     description:
       "Strict down-up picking on a single open string, then on fretted notes. The motion comes from the wrist, not the elbow, and the pick travels only a few millimeters past the string.",
     plan: "5 min open strings with metronome at 60 BPM (8th notes) · 5 min on a fretted note, checking the motion stays small · 5 min crossing between two adjacent strings.",
+    targetBpm: 72,
   },
   {
     id: "pk-b2",
@@ -317,6 +329,7 @@ const EXERCISES = [
     description:
       "Play the A minor pentatonic in groups of four (notes 1-2-3-4, 2-3-4-5, 3-4-5-6...) with strict alternate picking. The string crosses fall in awkward places — that's the point.",
     plan: "5 min at 70 BPM 16ths · 5 min at 80 · 5 min applying the same sequence idea to a major scale.",
+    targetBpm: 80,
   },
   {
     id: "pk-i2",
