@@ -3,6 +3,9 @@
 One focused 15-minute guitar practice session a day. A Third Watch Studios
 project.
 
+**Live:** https://thirdwatchstudios.github.io/GuitarPracticeApp/ — open it on
+your phone and "Add to Home Screen" to install.
+
 - Daily category scheduling (left hand, fingerstyle, picking, chords,
   fretboard, ear, repertoire) with a 126-exercise library
 - Lesson paths: ordered progressions, mastery tracked from your practice
