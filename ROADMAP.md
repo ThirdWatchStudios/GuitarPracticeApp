@@ -72,8 +72,10 @@ Carried over from earlier discussion plus new:
   Pages.
 - **"Show me" fretboard linking** — button on the exercise card that jumps
   the Fretboard Explorer to the relevant scale/chord.
-- **Day override** — "practice something else today" swap without editing
-  the weekly schedule.
+- ~~**Day override**~~ — done 2026-06-11, via the Lesson Paths dialog: a
+  header "Paths" button shows every category's path with mastery dots;
+  tapping one practices it today (tapping the scheduled one returns to the
+  schedule).
 - ~~**Data export/import**~~ — done 2026-06-11: backup/restore of all gp.*
   state as JSON, in the Settings dialog.
 - **Session flow mode** — a guided 15 minutes: the plan's segments become

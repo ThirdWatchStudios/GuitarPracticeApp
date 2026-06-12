@@ -19,6 +19,7 @@
       <h1>15-Minute Guitar</h1>
       <div class="header-right">
         <span id="streak" class="streak" title="Practice streak"></span>
+        <button id="paths-btn" class="icon-btn" title="Lesson paths">Paths</button>
         <button id="log-btn" class="icon-btn" title="Practice history">Log</button>
         <button id="settings-btn" class="icon-btn" title="Edit weekly schedule">Schedule</button>
       </div>
@@ -103,6 +104,18 @@
     </section>
 
     <section class="week-strip" id="week-strip"></section>
+
+    <dialog id="paths-dialog" class="settings-dialog paths-dialog">
+      <h2>Lesson Paths</h2>
+      <p class="settings-hint">
+        Each category is an ordered path; filled dots are mastered steps.
+        Tap a path to practice it today instead of the scheduled one.
+      </p>
+      <div id="paths-list" class="paths-list"></div>
+      <div class="dialog-actions">
+        <button id="paths-close" class="btn primary">Done</button>
+      </div>
+    </dialog>
 
     <dialog id="settings-dialog" class="settings-dialog">
       <h2>Settings</h2>

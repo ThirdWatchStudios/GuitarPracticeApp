@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   level: "gp.level", // legacy single level, migrated into gp.levels
   levels: "gp.levels", // { categoryId: "beginner" | "intermediate" | "advanced" }
   schedule: "gp.schedule",
+  dayOverride: "gp.dayOverride", // { date: "YYYY-MM-DD", categoryId } — practice this instead today
   history: "gp.history", // last N exercise ids, most recent last
   todayPick: "gp.todayPick", // { date: "YYYY-MM-DD", exerciseId, level }
   streak: "gp.streak", // { lastDone: "YYYY-MM-DD", count: n }
@@ -77,6 +78,8 @@ function loadLevels() {
 }
 
 function todayCategoryId() {
+  const o = load(STORAGE_KEYS.dayOverride, null);
+  if (o && o.date === todayString() && CATEGORIES[o.categoryId]) return o.categoryId;
   return schedule[new Date().getDay()];
 }
 
@@ -231,8 +234,11 @@ function saveNote() {
 
 function renderToday() {
   const day = new Date().getDay();
-  const cat = CATEGORIES[schedule[day]];
-  document.getElementById("today-label").textContent = `${DAY_NAMES[day]} · today's focus`;
+  const categoryId = todayCategoryId();
+  const overridden = categoryId !== schedule[day];
+  const cat = CATEGORIES[categoryId];
+  document.getElementById("today-label").textContent =
+    `${DAY_NAMES[day]} · ${overridden ? "your pick today" : "today's focus"}`;
   document.getElementById("category-name").textContent = cat.name;
   document.getElementById("category-blurb").textContent = cat.blurb;
 }
@@ -364,6 +370,55 @@ function renderWeekStrip() {
     chip.title = cat.name;
     chip.innerHTML = `<span class="day-name">${DAY_SHORT[day]}</span><span class="day-cat">${cat.short}</span>`;
     strip.appendChild(chip);
+  }
+}
+
+// ── Lesson paths dialog ──────────────────────────────────────────────────
+
+// One row per category: its current level's path with mastery dots.
+// Tapping a row swaps today's practice to that category (a day override);
+// tapping the scheduled category returns to the schedule.
+function renderPaths() {
+  const list = document.getElementById("paths-list");
+  list.innerHTML = "";
+  const scheduledId = schedule[new Date().getDay()];
+  const todayId = todayCategoryId();
+  for (const [id, cat] of Object.entries(CATEGORIES)) {
+    const lvl = levels[id];
+    const pool = pathExercises(id, lvl);
+    const masteredCount = pool.filter((e) => isMastered(e)).length;
+    const next = pool.find((e) => !isMastered(e));
+
+    const dots = pool
+      .map((e) => {
+        let cls = "path-dot";
+        if (isMastered(e)) cls += " mastered";
+        if (next && e.id === next.id) cls += " current";
+        return `<span class="${cls}" title="${escapeHtml(e.name)}"></span>`;
+      })
+      .join("");
+
+    let tag = "";
+    if (id === todayId) tag = " · today";
+    else if (id === scheduledId) tag = " · scheduled";
+
+    const row = document.createElement("button");
+    row.className = "paths-row" + (id === todayId ? " active" : "");
+    row.innerHTML =
+      `<span class="paths-info"><span class="paths-name">${cat.short}</span>` +
+      `<span class="paths-meta">${LEVEL_LABELS[lvl]} · ${masteredCount}/${pool.length} mastered${tag}</span></span>` +
+      `<span class="path-dots">${dots}</span>`;
+    row.addEventListener("click", () => {
+      if (id === scheduledId) localStorage.removeItem(STORAGE_KEYS.dayOverride);
+      else save(STORAGE_KEYS.dayOverride, { date: todayString(), categoryId: id });
+      localStorage.removeItem(STORAGE_KEYS.todayPick);
+      pathsDialog.close();
+      renderToday();
+      renderLevelButtons();
+      renderExercise();
+      renderLevelUp();
+    });
+    list.appendChild(row);
   }
 }
 
@@ -647,6 +702,13 @@ document.getElementById("note-save").addEventListener("click", saveNote);
     if (e.key === "Enter") saveNote();
   });
 });
+
+const pathsDialog = document.getElementById("paths-dialog");
+document.getElementById("paths-btn").addEventListener("click", () => {
+  renderPaths();
+  pathsDialog.showModal();
+});
+document.getElementById("paths-close").addEventListener("click", () => pathsDialog.close());
 
 const logDialog = document.getElementById("log-dialog");
 document.getElementById("log-btn").addEventListener("click", () => {
