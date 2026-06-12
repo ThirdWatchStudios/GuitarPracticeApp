@@ -40,15 +40,62 @@ select:focus-visible {
 .app {
   max-width: 640px;
   margin: 0 auto;
-  padding: 20px 18px 96px;
+  /* Safe-area insets keep the standalone PWA clear of the iOS status bar
+     and home indicator. */
+  padding: calc(20px + env(safe-area-inset-top, 0px)) 18px
+    calc(96px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
-/* On wide screens the FABs sit beside the column, not over it. */
+/* Wide screens (iPad landscape, desktop): two-column practice view —
+   exercise card beside a rail of banner + schedule — and FABs sit beside
+   the column, not over it. */
 @media (min-width: 900px) {
-  .app { padding-bottom: 28px; }
+  .app {
+    max-width: 1060px;
+    padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .main-tabs {
+    max-width: 420px;
+    width: 100%;
+    align-self: center;
+  }
+
+  #tab-practice {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 350px;
+    grid-template-rows: auto auto 1fr;
+    align-items: start;
+  }
+
+  #tab-practice .exercise-card { grid-area: 1 / 1 / 4 / 2; }
+  #tab-practice .today-banner { grid-area: 1 / 2; }
+  #tab-practice .level-up { grid-area: 2 / 2; }
+
+  /* The week strip becomes a vertical mini-schedule in the rail. */
+  #tab-practice .week-strip {
+    grid-area: 3 / 2;
+    grid-template-columns: 1fr;
+  }
+
+  #tab-practice .day-chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 7px 14px;
+    text-align: left;
+  }
+
+  /* The fretboard keeps a sane width so the SVG doesn't tower. */
+  #tab-fretboard .fretboard-section {
+    width: 100%;
+    max-width: 780px;
+    margin: 0 auto;
+  }
 }
 
 /* Main view tabs */
@@ -90,8 +137,8 @@ select:focus-visible {
 /* Floating action buttons (timer + metronome) */
 .fab-stack {
   position: fixed;
-  right: 20px;
-  bottom: 20px;
+  right: calc(20px + env(safe-area-inset-right, 0px));
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   align-items: flex-end;
