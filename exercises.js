@@ -6,7 +6,10 @@
 // picker serves the earliest unmastered exercise first. An exercise is
 // mastered after MASTERY_SESSIONS logged sessions, or — where `targetBpm`
 // is set — by logging a session at or above that tempo. Every exercise
-// carries a one-line `why` connecting it to real playing.
+// carries a one-line `why` connecting it to real playing. Exercises that
+// reference concrete shapes carry `visuals`: chord grids, scale windows
+// (root + scale key from fretboard.js + a [lo, hi] fret window), and tab
+// snippets, rendered on the card by diagrams.js.
 
 const CATEGORIES = {
   lefthand: {
@@ -69,6 +72,7 @@ const EXERCISES = [
     plan: "5 min slow with a metronome at 60 BPM (one note per click) · 5 min moving the pattern up one fret each pass · 5 min trying 80 BPM while keeping every note clean.",
     targetBpm: 80,
     why: "Every riff and scale you'll ever play rides on these four fingers landing exactly where you aim them.",
+    visuals: [{"type":"tab","text":"E|--5--6--7--8--\nA|--5--6--7--8--\nD|--5--6--7--8--   ...all six strings","label":"One finger per fret"}],
   },
   {
     id: "lh-b5",
@@ -89,6 +93,7 @@ const EXERCISES = [
       "Learn the C major scale in open position, saying each note name aloud as you play it. Use the correct finger for each fret (finger 1 = fret 1, finger 2 = fret 2, finger 3 = fret 3).",
     plan: "5 min ascending only, slowly · 5 min ascending and descending with a metronome · 5 min starting from a random scale note and finding your way back to C.",
     why: "Most melodies you'll want to pick out live inside this scale — and naming notes now makes the whole neck legible later.",
+    visuals: [{"type":"scale","root":"C","scale":"major","frets":[0,3],"label":"C major, open position"}],
   },
   {
     id: "lh-b3",
@@ -109,6 +114,7 @@ const EXERCISES = [
       "Pick a note at fret 5, hammer onto fret 7 with your ring finger without picking again. Then reverse: pick fret 7, pull off to 5. Aim for the second note to be as loud as the first.",
     plan: "5 min hammer-ons on each string · 5 min pull-offs on each string · 5 min combining: pick once, hammer on, pull off (3 notes per pick).",
     why: "Hammer-ons and pull-offs are how recorded guitar gets its smooth, vocal quality — picking every note sounds stiff.",
+    visuals: [{"type":"tab","text":"G|--5h7--7p5--5h7p5--","label":"h = hammer-on, p = pull-off"}],
   },
   {
     id: "lh-b6",
@@ -129,6 +135,7 @@ const EXERCISES = [
       "Play the G major scale in three positions (open/2nd, 4th/5th, and 7th position), connecting them by shifting on the B string. Focus on smooth position shifts with no gap in sound.",
     plan: "5 min per position, then spend the last pass linking all three ascending and descending without stopping.",
     why: "Songs don't stay in one position; smooth shifts let a melody go where it wants instead of where your hand is parked.",
+    visuals: [{"type":"scale","root":"G","scale":"major","frets":[2,5],"label":"2nd position"},{"type":"scale","root":"G","scale":"major","frets":[4,8],"label":"5th position"},{"type":"scale","root":"G","scale":"major","frets":[7,10],"label":"7th position"}],
   },
   {
     id: "lh-i2",
@@ -140,6 +147,7 @@ const EXERCISES = [
     plan: "5 min at 60 BPM triplets · 5 min at 72 BPM · 5 min improvising short legato phrases inside the box.",
     targetBpm: 72,
     why: "This is the sound of fluid blues and rock soloing — speed that flows instead of machine-gunning.",
+    visuals: [{"type":"scale","root":"A","scale":"minorPent","frets":[5,8],"label":"A minor pentatonic, box 1"}],
   },
   {
     id: "lh-i3",
@@ -254,6 +262,7 @@ const EXERCISES = [
       "Rest your thumb on the low E and fingers i-m-a on the G, B, and high E strings. Over an open Em chord, play: thumb, index, middle, ring — one at a time, evenly. This is the foundation of all fingerstyle.",
     plan: "5 min on Em getting an even volume from each finger · 5 min switching between Em and G · 5 min trying the pattern as continuous 8th notes.",
     why: "A stable right hand is to fingerstyle what posture is to singing — every pattern you ever learn sits on this.",
+    visuals: [{"type":"chord","name":"Em"}],
   },
   {
     id: "fs-b5",
@@ -274,6 +283,7 @@ const EXERCISES = [
       "Over a C chord, alternate your thumb between the 5th and 4th strings on every beat. Once steady, add your index finger plucking the B string on the 'and' of beats 1 and 2. The thumb never stops.",
     plan: "5 min thumb alone until it's automatic · 5 min adding the index finger · 5 min trying the same thing over an Am chord.",
     why: "That steady thumb is the engine of Dust in the Wind, Landslide and most fingerpicked songs you'll want to play.",
+    visuals: [{"type":"chord","name":"C"},{"type":"tab","text":"    1 & 2 & 3 & 4 &\nB|----1---1---------\nD|------2-------2---\nA|--3-------3-------","label":"Thumb on every beat"}],
   },
   {
     id: "fs-b3",
@@ -285,6 +295,7 @@ const EXERCISES = [
     plan: "5 min on one chord perfecting the motion · 5 min through the progression slowly · 5 min with a metronome at 70 BPM.",
     targetBpm: 70,
     why: "p-i-m-a is the default vocabulary of fingerstyle — once it's automatic, new patterns are rearrangements, not new skills.",
+    visuals: [{"type":"chord","name":"C"},{"type":"chord","name":"Am"},{"type":"chord","name":"F (barre)"},{"type":"chord","name":"G"}],
   },
   {
     id: "fs-b4",
@@ -295,6 +306,7 @@ const EXERCISES = [
       "A 'pinch' is thumb and finger plucking together. Over a G chord, pinch the low G (thumb) and high G (ring finger) at the same time, then arpeggiate the middle strings. Pinches mark the melody in fingerstyle tunes.",
     plan: "5 min isolated pinches, checking both notes ring equally · 5 min pinch-then-arpeggio over G and C · 5 min over a D chord where the spacing changes.",
     why: "Pinches are how a single guitar plays melody and bass at once — the heart of solo arrangements.",
+    visuals: [{"type":"chord","name":"G"},{"type":"chord","name":"C"},{"type":"chord","name":"D"}],
   },
   {
     id: "fs-b6",
@@ -315,6 +327,7 @@ const EXERCISES = [
       "Keep the alternating thumb bass going over C and G7 while your fingers pick out the melody of a simple tune (try 'Freight Train'). The melody notes land on top of the bass without interrupting it.",
     plan: "5 min bass-only refresher · 7 min adding melody phrase by phrase · 3 min playing through whatever you've got, even if rough.",
     why: "This is the moment fingerstyle becomes self-accompaniment: one guitar, a band's worth of parts.",
+    visuals: [{"type":"chord","name":"C"},{"type":"chord","name":"G7"}],
   },
   {
     id: "fs-i5",
@@ -335,6 +348,7 @@ const EXERCISES = [
       "Thumb plays steady quarter notes on the beat; fingers pluck chord tones only on off-beats. This off-beat independence is what makes fingerstyle groove. Use an Am - Dm - E7 - Am progression.",
     plan: "5 min clapping the rhythm away from the guitar · 5 min slow with metronome · 5 min bringing it up to a comfortable groove tempo.",
     why: "Off-beat independence is what makes fingerstyle groove rather than plod.",
+    visuals: [{"type":"chord","name":"Am"},{"type":"chord","name":"Dm"},{"type":"chord","name":"E7"}],
   },
   {
     id: "fs-i3",
@@ -376,6 +390,7 @@ const EXERCISES = [
       "Play a jazz-style walking bass line with your thumb (quarter notes through a ii-V-I in G) while your fingers punch chord stabs on beats 2 and 4. Two musicians, one hand.",
     plan: "5 min bass line alone, naming the connecting notes · 5 min adding chord stabs · 5 min looping the progression and varying the stab rhythm.",
     why: "Walking bass under chords is the jazz-duo trick that makes one guitar sound like a rhythm section.",
+    visuals: [{"type":"chord","name":"Am7"},{"type":"chord","name":"D7"},{"type":"chord","name":"Gmaj7"}],
   },
   {
     id: "fs-a5",
@@ -439,6 +454,7 @@ const EXERCISES = [
     plan: "5 min open strings with metronome at 60 BPM (8th notes) · 5 min on a fretted note, checking the motion stays small · 5 min crossing between two adjacent strings.",
     targetBpm: 72,
     why: "Alternate picking is the default motion of pick playing — a small, relaxed stroke now decides your speed limit for years.",
+    visuals: [{"type":"tab","text":"    v ^ v ^ v ^ v ^\nE|--0-0-0-0-0-0-0-0--","label":"v = down, ^ = up"}],
   },
   {
     id: "pk-b5",
@@ -460,6 +476,7 @@ const EXERCISES = [
       "Your strumming arm moves down-up constantly like a pendulum, even when not hitting strings. Practice the pattern D-D-U-U-D-U over an Em chord — the arm never stops, you just miss the strings on purpose.",
     plan: "5 min all downstrums on the beat · 5 min the D-D-U-U-D-U pattern slowly · 5 min over a two-chord change (Em to Am).",
     why: "The pendulum arm is why good strummers never lose the beat — the groove lives in the arm, not the chord.",
+    visuals: [{"type":"chord","name":"Em"},{"type":"chord","name":"Am"}],
   },
   {
     id: "pk-b3",
@@ -501,6 +518,7 @@ const EXERCISES = [
     plan: "5 min at 70 BPM 16ths · 5 min at 80 · 5 min applying the same sequence idea to a major scale.",
     targetBpm: 80,
     why: "Sequences are how scales become lines — they're the connective tissue of practically every solo.",
+    visuals: [{"type":"scale","root":"A","scale":"minorPent","frets":[5,8],"label":"A minor pentatonic, box 1"}],
   },
   {
     id: "pk-i5",
@@ -582,6 +600,7 @@ const EXERCISES = [
       "Flatpick through a banjo-roll style pattern across three strings (D-G-B) over open chords, one note per string, strict alternate picking. This is one of the hardest pick-hand skills — slow is the only way in.",
     plan: "7 min on a C chord roll at painfully slow tempo · 5 min over a G chord · 3 min pushing tempo only as far as it stays clean.",
     why: "Cross-picking gives flatpickers the sparkle of fingerstyle — it's bluegrass's hardest and prettiest trick.",
+    visuals: [{"type":"chord","name":"C"},{"type":"chord","name":"G"}],
   },
   {
     id: "pk-a3",
@@ -592,6 +611,7 @@ const EXERCISES = [
       "Pick the low note with the pick and grab the higher strings with middle and ring fingers. Drill country-style 'double stop pops' over an A7 chord, then a pedal-steel style lick with bends.",
     plan: "5 min pick + middle finger basics · 5 min double-stop licks · 5 min combining hybrid picking with a bend on the B string.",
     why: "Pick-plus-fingers grabs non-adjacent strings instantly — the country secret that rock players steal.",
+    visuals: [{"type":"chord","name":"A7"}],
   },
   {
     id: "pk-a4",
@@ -625,6 +645,7 @@ const EXERCISES = [
       "Pick two chords (start with Em-Am, then C-G). Count how many clean changes you can make in one minute. Log the number — beating yesterday's score is the whole game.",
     plan: "Three rounds of: 1 min counting changes + 2 min slow-motion practice of whatever finger is late. Do two chord pairs.",
     why: "Slow changes are what stall beginner songs; this drill attacks the exact bottleneck, measurably.",
+    visuals: [{"type":"chord","name":"Em"},{"type":"chord","name":"Am"},{"type":"chord","name":"C"},{"type":"chord","name":"G"}],
   },
   {
     id: "ch-b5",
@@ -635,6 +656,7 @@ const EXERCISES = [
       "Fret a chord and pick each string one at a time. Every buzz or dead string gets diagnosed: more fingertip curl, a nudged thumb, a finger scooted off a neighboring string. Then strum and hear the difference.",
     plan: "5 min auditing Em, Am and C string by string · 5 min fixing the worst offender finger by finger · 5 min re-strumming and comparing the before and after.",
     why: "A chord that's five-sixths clean still sounds wrong — the audit habit fixes problems your strumming hides.",
+    visuals: [{"type":"chord","name":"Em"},{"type":"chord","name":"Am"},{"type":"chord","name":"C"}],
   },
   {
     id: "ch-b2",
@@ -645,6 +667,7 @@ const EXERCISES = [
       "Start with the small 4-string F (barre frets 1 on strings 1-2 only). Check each string rings. Then attempt the full barre for short holds — squeeze for 5 seconds, rest for 10. Don't grind through pain.",
     plan: "5 min small F, strumming and checking strings · 5 min full barre holds with rests · 5 min changing C to small-F slowly.",
     why: "The F barre unlocks every key — and the small version keeps you playing songs while strength builds.",
+    visuals: [{"type":"chord","name":"F (barre)"},{"type":"chord","name":"C"}],
   },
   {
     id: "ch-b3",
@@ -655,6 +678,7 @@ const EXERCISES = [
       "Count '1 and 2 and 3 and 4 and' out loud while strumming simple patterns. Start with downs on numbers, then add ups on selected 'ands'. Counting aloud is non-negotiable — it wires rhythm to your voice.",
     plan: "5 min downs only, counting aloud · 5 min adding ups on 'and' of 2 and 4 · 5 min over a G-C-D progression.",
     why: "Counting aloud welds rhythm into your body — it's why some players never get lost in a song.",
+    visuals: [{"type":"chord","name":"G"},{"type":"chord","name":"C"},{"type":"chord","name":"D"}],
   },
   {
     id: "ch-b4",
@@ -665,6 +689,7 @@ const EXERCISES = [
       "Play the chords that live in the key of G: G, Am, C, D, Em. Strum each for one bar in different orders. Notice how each chord 'wants' to move — Em is sad-G, D pulls home to G.",
     plan: "5 min cycling through the family in order · 5 min in random orders · 5 min building a 4-chord progression you actually like and looping it.",
     why: "Hearing how chords pull toward each other is what lets you predict songs you've never played.",
+    visuals: [{"type":"chord","name":"G"},{"type":"chord","name":"Am"},{"type":"chord","name":"C"},{"type":"chord","name":"D"},{"type":"chord","name":"Em"}],
   },
   {
     id: "ch-b6",
@@ -675,6 +700,7 @@ const EXERCISES = [
       "Some chord pairs share finger positions — moving Am to C, two fingers never leave the strings. Find the anchors in your common changes and keep them planted while only the moving fingers travel.",
     plan: "5 min spotting anchors in Am-C and Em-G · 5 min changing chords while the anchors never lift · 5 min applying it to the changes of a song you're learning.",
     why: "Fast changes aren't fast fingers — they're fewer movements. Anchors cut the work in half.",
+    visuals: [{"type":"chord","name":"Am"},{"type":"chord","name":"C"},{"type":"chord","name":"Em"},{"type":"chord","name":"G"}],
   },
   {
     id: "ch-i1",
@@ -685,6 +711,7 @@ const EXERCISES = [
       "Play a I-vi-IV-V progression (e.g., C-Am-F-G) entirely with barre chords: E-shapes and A-shapes. Then move the whole progression to a new key just by shifting frets.",
     plan: "5 min in C with E-shape roots · 5 min mixing E- and A-shapes for minimal movement · 5 min transposing to Eb and A.",
     why: "Two moveable shapes turn five open chords into every chord in every key.",
+    visuals: [{"type":"chord","name":"F (barre)","label":"E-shape barre"},{"type":"chord","name":"B (barre)","label":"A-shape barre"}],
   },
   {
     id: "ch-i2",
@@ -695,6 +722,7 @@ const EXERCISES = [
       "Play a 12-bar blues in A using A7, D7, E7 — first open shapes, then moveable two-note 'shell' voicings (root + 7th). Shells are the gateway to jazz comping.",
     plan: "5 min open-chord 12-bar with a shuffle strum · 5 min learning the shell shapes · 5 min the 12-bar using only shells.",
     why: "The 12-bar is the most-called progression at any jam — and shells are your first step into jazz comping.",
+    visuals: [{"type":"chord","name":"A7"},{"type":"chord","name":"D7"},{"type":"chord","name":"E7"}],
   },
   {
     id: "ch-i5",
@@ -705,6 +733,7 @@ const EXERCISES = [
       "Decorate open chords with their neighbors: Dsus2 and Dsus4 around D, Asus4 around A, Cadd9 for C. Lift and re-plant single fingers in rhythm so the decoration becomes a figure, not an accident.",
     plan: "5 min sus moves around D and A · 5 min around C and G with add9 colors · 5 min looping a two-chord figure decorated until it sounds like a record.",
     why: "Sus decorations are how one chord becomes a guitar part — the sound of countless classic intros.",
+    visuals: [{"type":"chord","name":"Dsus4"},{"type":"chord","name":"Asus2"},{"type":"chord","name":"Cadd9"}],
   },
   {
     id: "ch-i3",
@@ -735,6 +764,7 @@ const EXERCISES = [
       "Learn the classic bass walks: G to Em via D/F#, and C to Am via C/B. The chord on top barely changes — the bass note carries the motion. Name the bass note aloud as you land each one.",
     plan: "5 min the G - D/F# - Em walk until seamless · 5 min C - C/B - Am · 5 min finding one more walk-down in a song you already play.",
     why: "Walk-downs are the connective tissue of acoustic songs — a moving bass line makes a progression feel inevitable.",
+    visuals: [{"type":"tab","text":"     G    D/F#   Em\ne|---3-----2-----0---\nB|---3-----3-----0---\nG|---0-----2-----0---\nD|---0-----0-----2---\nA|---2-----0-----2---\nE|---3-----2-----0---","label":"The walk-down"}],
   },
   {
     id: "ch-a1",
@@ -847,6 +877,7 @@ const EXERCISES = [
       "Play a C major scale, then build the C chord by stacking every other note (C-E-G). Find those three notes inside your open C chord shape — every string is one of them. Repeat with G (G-B-D).",
     plan: "5 min finding chord tones in the C shape · 5 min in the G shape · 5 min in Am (A-C-E) — notice the only change from C is one note.",
     why: "Knowing chords are stacked scale notes is the aha that links riffs, solos and progressions into one system.",
+    visuals: [{"type":"chord","name":"C"},{"type":"chord","name":"G"},{"type":"chord","name":"Am"}],
   },
   {
     id: "fb-b6",
@@ -867,6 +898,7 @@ const EXERCISES = [
       "Play A minor pentatonic boxes 1, 2 and 3, then connect them by sliding along the G and B strings. Improvise short phrases that deliberately cross box boundaries.",
     plan: "5 min reviewing the three boxes · 5 min sliding between them on one string pair · 5 min improvising across boundaries over an Am backing feel.",
     why: "Crossing box boundaries is what separates players who solo from players who recite shapes.",
+    visuals: [{"type":"scale","root":"A","scale":"minorPent","frets":[5,8],"label":"Box 1"},{"type":"scale","root":"A","scale":"minorPent","frets":[7,10],"label":"Box 2"},{"type":"scale","root":"A","scale":"minorPent","frets":[9,12],"label":"Box 3"}],
   },
   {
     id: "fb-i5",
@@ -877,6 +909,7 @@ const EXERCISES = [
       "Learn the last two A minor pentatonic boxes and connect box 5 back into box 1 an octave higher. The five boxes now tile the entire neck — no fret is outside the scale anymore.",
     plan: "5 min boxes 4 and 5 in A minor · 5 min linking box 5 into box 1 an octave up · 5 min improvising one phrase per box, climbing the neck.",
     why: "Five connected boxes make the whole neck one scale — no more dead zones where the solo can't go.",
+    visuals: [{"type":"scale","root":"A","scale":"minorPent","frets":[0,3],"label":"Box 4 (low octave)"},{"type":"scale","root":"A","scale":"minorPent","frets":[2,5],"label":"Box 5"},{"type":"scale","root":"A","scale":"minorPent","frets":[5,8],"label":"Box 1 again"}],
   },
   {
     id: "fb-i2",
@@ -907,6 +940,7 @@ const EXERCISES = [
       "Play a C major chord using all five CAGED shapes up the neck (C shape, A shape, G shape, E shape, D shape). For each, identify where the root notes sit. One chord, the whole fretboard.",
     plan: "7 min walking through the five shapes slowly · 4 min naming root locations in each · 4 min doing the same for F major.",
     why: "CAGED ties every chord you know into one map — after this, where to play C has five answers.",
+    visuals: [{"type":"chord","name":"C","label":"C shape"},{"type":"chord","name":"A","label":"A shape"},{"type":"chord","name":"G","label":"G shape"},{"type":"chord","name":"E","label":"E shape"},{"type":"chord","name":"D","label":"D shape"}],
   },
   {
     id: "fb-i6",
@@ -917,6 +951,7 @@ const EXERCISES = [
       "C major pentatonic and A minor pentatonic are the same shapes with different home notes. Improvise resolving every phrase to A, then resolve the same shapes to C and hear the brightness flip.",
     plan: "5 min phrases resolving to A over an Am drone · 5 min resolving to C over a C drone · 5 min switching targets mid-phrase and hearing the mood move.",
     why: "One set of shapes serves two sounds — hearing the root flip is the difference between knowing patterns and using them.",
+    visuals: [{"type":"scale","root":"A","scale":"minorPent","frets":[5,8],"label":"Home note: A"},{"type":"scale","root":"C","scale":"majorPent","frets":[5,8],"label":"Home note: C"}],
   },
   {
     id: "fb-a1",

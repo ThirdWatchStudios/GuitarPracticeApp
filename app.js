@@ -256,6 +256,7 @@ function renderExercise() {
     document.getElementById("last-time").classList.add("hidden");
     document.getElementById("path-strip").classList.add("hidden");
     document.getElementById("exercise-why").classList.add("hidden");
+    document.getElementById("exercise-visuals").classList.add("hidden");
     return;
   }
   document.getElementById("exercise-name").textContent = currentExercise.name;
@@ -263,6 +264,8 @@ function renderExercise() {
   const whyEl = document.getElementById("exercise-why");
   whyEl.textContent = currentExercise.why || "";
   whyEl.classList.toggle("hidden", !currentExercise.why);
+  // diagrams.js loads after this file; it renders the initial visuals itself.
+  if (typeof dgRenderVisuals === "function") dgRenderVisuals(currentExercise);
   document.getElementById("exercise-plan").textContent = currentExercise.plan;
   renderPath();
   renderLastTime();

@@ -11,6 +11,7 @@ const ASSETS = [
   "app.js",
   "exercises.js",
   "fretboard.js",
+  "diagrams.js",
   "metronome.js",
   "manifest.webmanifest",
   "icon.svg",

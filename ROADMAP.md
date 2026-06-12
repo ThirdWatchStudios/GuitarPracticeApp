@@ -30,8 +30,10 @@ pool, level-up prompts), all styled to the Third Watch Studios brand.
   action; low frequency, high value for newer players.
 
 ### Content quality ideas
-- Embed small fretboard diagrams *inside* exercise cards (reuse the SVG
-  renderer) so "play A minor pentatonic box 2" shows the box.
+- ~~Embed small fretboard diagrams *inside* exercise cards~~ — done
+  2026-06-12: optional `visuals` per exercise (chord grids, scale fret
+  windows, tab snippets) rendered by diagrams.js; 32 exercises covered so
+  far, extend as content grows.
 - Optional video/reference links per exercise (kept external, app stays static).
 - ~~A "why this matters" line per exercise connecting it to real playing.~~ —
   done 2026-06-11, on all 126 exercises, shown on the exercise card.
@@ -70,8 +72,8 @@ Carried over from earlier discussion plus new:
 - ~~**PWA**~~ — done 2026-06-11: manifest, icons, stale-while-revalidate
   service worker (registers on non-localhost only), deployed via GitHub
   Pages.
-- **"Show me" fretboard linking** — button on the exercise card that jumps
-  the Fretboard Explorer to the relevant scale/chord.
+- ~~**"Show me" fretboard linking**~~ — done 2026-06-12: tapping any chord
+  or scale diagram on the card opens the Fretboard Explorer pre-set to it.
 - ~~**Day override**~~ — done 2026-06-11, via the Lesson Paths dialog: a
   header "Paths" button shows every category's path with mastery dots;
   tapping one practices it today (tapping the scheduled one returns to the
