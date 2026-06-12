@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Third Watch Studios: deep sea navy field, warm amber beacon. -->
+  <rect width="512" height="512" fill="#071419"/>
+  <path d="M 256 112
+           C 332 112 400 150 400 222
+           C 400 316 308 396 256 420
+           C 204 396 112 316 112 222
+           C 112 150 180 112 256 112
+           Z"
+        fill="#b87a2e"/>
+</svg>

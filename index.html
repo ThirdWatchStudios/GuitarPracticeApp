@@ -4,6 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Guitar Practice — 15 Minutes a Day</title>
+  <meta name="theme-color" content="#071419" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Guitar" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -98,9 +105,21 @@
     <section class="week-strip" id="week-strip"></section>
 
     <dialog id="settings-dialog" class="settings-dialog">
-      <h2>Weekly Schedule</h2>
+      <h2>Settings</h2>
+      <h3>Weekly schedule</h3>
       <p class="settings-hint">Choose which category you practice on each day.</p>
       <div id="schedule-editor" class="schedule-editor"></div>
+      <h3>Data</h3>
+      <p class="settings-hint">
+        Your practice log lives in this browser. Download a backup now and
+        then — it's also how you move to a new device.
+      </p>
+      <div class="data-actions">
+        <button id="export-btn" class="btn secondary">Download backup</button>
+        <button id="import-btn" class="btn secondary">Restore backup</button>
+        <input id="import-file" type="file" accept="application/json,.json" class="hidden" />
+      </div>
+      <p id="data-msg" class="settings-hint data-msg hidden"></p>
       <div class="dialog-actions">
         <button id="settings-reset" class="btn secondary">Restore defaults</button>
         <button id="settings-close" class="btn primary">Done</button>

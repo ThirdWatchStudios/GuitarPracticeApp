@@ -67,14 +67,15 @@ Carried over from earlier discussion plus new:
 
 - **Drone / vamp player** — sustained root or simple chord loop for improv
   and ear days; lives naturally as a third FAB.
-- **PWA** — manifest + service worker for phone home-screen install and
-  offline use. High value, small effort.
+- ~~**PWA**~~ — done 2026-06-11: manifest, icons, stale-while-revalidate
+  service worker (registers on non-localhost only), deployed via GitHub
+  Pages.
 - **"Show me" fretboard linking** — button on the exercise card that jumps
   the Fretboard Explorer to the relevant scale/chord.
 - **Day override** — "practice something else today" swap without editing
   the weekly schedule.
-- **Data export/import** — download/restore the practice log as JSON;
-  insurance against cleared browser storage, and the bridge to multi-device.
+- ~~**Data export/import**~~ — done 2026-06-11: backup/restore of all gp.*
+  state as JSON, in the Settings dialog.
 - **Session flow mode** — a guided 15 minutes: the plan's segments become
   timed stages (5/5/5) with the timer auto-advancing and a chime per stage.
 - **Keyboard shortcuts** — space to start/stop timer, M for metronome, etc.
@@ -98,7 +99,7 @@ Carried over from earlier discussion plus new:
 1. ~~Lesson paths MVP~~ — shipped 2026-06-11.
 2. Spaced-repetition review pool.
 3. Drone player FAB + "show me" fretboard linking.
-4. PWA wrapper + data export.
+4. ~~PWA wrapper + data export~~ — shipped 2026-06-11.
 5. Content expansion pass (more exercises, new categories) — first pass
    shipped 2026-06-11 (4 → 6 per level + "why" lines); new categories and
    the push to 8–10 per level remain.

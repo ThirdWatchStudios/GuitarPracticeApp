@@ -473,6 +473,70 @@ function renderScheduleEditor() {
   }
 }
 
+// ── Backup & restore ─────────────────────────────────────────────────────
+// All app state lives under gp.* keys (including metronome and fretboard
+// settings), so a backup is just those keys verbatim.
+
+function collectBackup() {
+  const data = { app: "15-minute-guitar", exportedAt: new Date().toISOString(), keys: {} };
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k.startsWith("gp.")) data.keys[k] = localStorage.getItem(k);
+  }
+  return data;
+}
+
+// Throws if the parsed file isn't a plausible backup; otherwise replaces
+// all gp.* state with its contents.
+function applyBackup(data) {
+  const keys = data && data.keys;
+  const entries = keys && typeof keys === "object" ? Object.entries(keys) : [];
+  if (
+    !data ||
+    data.app !== "15-minute-guitar" ||
+    entries.length === 0 ||
+    entries.some(([k, v]) => !k.startsWith("gp.") || typeof v !== "string")
+  ) {
+    throw new Error("not a backup file");
+  }
+  entries.forEach(([, v]) => JSON.parse(v)); // every value must be valid JSON
+  Object.keys(localStorage)
+    .filter((k) => k.startsWith("gp."))
+    .forEach((k) => localStorage.removeItem(k));
+  entries.forEach(([k, v]) => localStorage.setItem(k, v));
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(collectBackup(), null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `guitar-practice-backup-${todayString()}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showDataMsg("Backup downloaded. Keep it somewhere safe.");
+}
+
+async function importData(file) {
+  try {
+    const data = JSON.parse(await file.text());
+    const when = data && data.exportedAt ? formatShortDate(data.exportedAt.slice(0, 10)) : "an unknown date";
+    const count = data && data.keys && data.keys["gp.log"] ? JSON.parse(data.keys["gp.log"]).length : 0;
+    if (!confirm(`Replace this browser's practice data with the backup from ${when} (${count} logged sessions)?`)) {
+      return;
+    }
+    applyBackup(data);
+    location.reload();
+  } catch {
+    showDataMsg("That file doesn't look like a 15-Minute Guitar backup.");
+  }
+}
+
+function showDataMsg(text) {
+  const el = document.getElementById("data-msg");
+  el.textContent = text;
+  el.classList.remove("hidden");
+}
+
 // ── Timer ────────────────────────────────────────────────────────────────
 
 const TIMER_TOTAL = 15 * 60; // seconds
@@ -594,7 +658,17 @@ document.getElementById("log-close").addEventListener("click", () => logDialog.c
 const settingsDialog = document.getElementById("settings-dialog");
 document.getElementById("settings-btn").addEventListener("click", () => {
   renderScheduleEditor();
+  document.getElementById("data-msg").classList.add("hidden");
   settingsDialog.showModal();
+});
+
+document.getElementById("export-btn").addEventListener("click", exportData);
+document.getElementById("import-btn").addEventListener("click", () => {
+  document.getElementById("import-file").click();
+});
+document.getElementById("import-file").addEventListener("change", (e) => {
+  if (e.target.files[0]) importData(e.target.files[0]);
+  e.target.value = "";
 });
 document.getElementById("settings-close").addEventListener("click", () => settingsDialog.close());
 document.getElementById("settings-reset").addEventListener("click", () => {
@@ -652,3 +726,13 @@ renderLevelUp();
 renderStreak();
 renderWeekStrip();
 renderTimer();
+
+// PWA: register the service worker in production only, so local dev never
+// fights a stale cache.
+if (
+  "serviceWorker" in navigator &&
+  location.hostname !== "localhost" &&
+  location.hostname !== "127.0.0.1"
+) {
+  navigator.serviceWorker.register("sw.js");
+}
