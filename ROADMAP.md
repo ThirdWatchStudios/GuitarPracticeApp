@@ -1,21 +1,23 @@
 # 15-Minute Guitar — Roadmap & Lesson Planning
 
 High-level ideas for future sessions. The app currently has: daily category
-scheduling, an 84-exercise library (7 categories × 3 levels), fretboard
-explorer with alternate tunings, metronome + timer FABs, practice log with
-notes and personal bests, lesson paths (per-category levels, ordered
-progression, mastery via the log, review pool, level-up prompts), all styled
-to the Third Watch Studios brand.
+scheduling, a 126-exercise library (7 categories × 3 levels × 6, each with a
+"why this matters" line), fretboard explorer with alternate tunings,
+metronome + timer FABs, practice log with notes and personal bests, lesson
+paths (per-category levels, ordered progression, mastery via the log, review
+pool, level-up prompts), all styled to the Third Watch Studios brand.
 
 ---
 
 ## 1. Lesson content to add
 
 ### Deepen existing categories
-- **More exercises per level** — 4 per category/level is enough to rotate but
-  thin over months. Target 8–10 each so a quarter of daily picks feel fresh.
+- **More exercises per level** — first pass done 2026-06-11: every
+  category/level went from 4 to 6, slotted into path order with `targetBpm`
+  where tempo-driven. Next pass takes them to the 8–10 target.
 - **Sub-levels / difficulty tags** — within "intermediate," tag exercises
   early/mid/late so progression can be granular without a full level jump.
+  (Lower priority now that path order gives within-level granularity.)
 - **Variations on one exercise** — e.g. the 24 finger permutations exercise
   could track *which* 8 permutations you did and serve the next batch.
 
@@ -31,7 +33,8 @@ to the Third Watch Studios brand.
 - Embed small fretboard diagrams *inside* exercise cards (reuse the SVG
   renderer) so "play A minor pentatonic box 2" shows the box.
 - Optional video/reference links per exercise (kept external, app stays static).
-- A "why this matters" line per exercise connecting it to real playing.
+- ~~A "why this matters" line per exercise connecting it to real playing.~~ —
+  done 2026-06-11, on all 126 exercises, shown on the exercise card.
 
 ## 2. Lesson paths (the big one)
 
@@ -96,5 +99,6 @@ Carried over from earlier discussion plus new:
 2. Spaced-repetition review pool.
 3. Drone player FAB + "show me" fretboard linking.
 4. PWA wrapper + data export.
-5. Content expansion pass (more exercises, new categories) — best done after
-   paths exist so new content slots into a structure.
+5. Content expansion pass (more exercises, new categories) — first pass
+   shipped 2026-06-11 (4 → 6 per level + "why" lines); new categories and
+   the push to 8–10 per level remain.

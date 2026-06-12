@@ -334,6 +334,15 @@ select:focus-visible {
   color: var(--text);
 }
 
+/* "Why this matters" line */
+.exercise-why {
+  margin-top: 10px;
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--text-dim);
+  line-height: 1.55;
+}
+
 .plan-box {
   margin-top: 18px;
   background: var(--surface-2);

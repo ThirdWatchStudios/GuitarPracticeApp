@@ -249,10 +249,14 @@ function renderExercise() {
     card.querySelector("#exercise-plan").textContent = "";
     document.getElementById("last-time").classList.add("hidden");
     document.getElementById("path-strip").classList.add("hidden");
+    document.getElementById("exercise-why").classList.add("hidden");
     return;
   }
   document.getElementById("exercise-name").textContent = currentExercise.name;
   document.getElementById("exercise-description").textContent = currentExercise.description;
+  const whyEl = document.getElementById("exercise-why");
+  whyEl.textContent = currentExercise.why || "";
+  whyEl.classList.toggle("hidden", !currentExercise.why);
   document.getElementById("exercise-plan").textContent = currentExercise.plan;
   renderPath();
   renderLastTime();
